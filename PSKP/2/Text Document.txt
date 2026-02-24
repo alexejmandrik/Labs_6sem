@@ -1,0 +1,106 @@
+http://localhost:3000/api/faculties
+http://localhost:3000/api/pulpits
+http://localhost:3000/api/subjects
+http://localhost:3000/api/auditoriumstypes
+http://localhost:3000/api/auditorims
+http://localhost:3000/api/teachers
+
+http://localhost:3000/api/faculties
+{
+  "FACULTY": 5,
+  "FACULTY_NAME": "Новый факультет"
+}
+
+http://localhost:3000/api/pulpits
+{
+  "PULPIT": 4,
+  "PULPIT_NAME": "Новая кафедра",
+  "FACULTY": 1
+}
+
+http://localhost:3000/api/subjects
+{
+  "SUBJECT": 5,
+  "SUBJECT_NAME": "Новый предмет",
+  "PULPIT": 1
+}
+
+http://localhost:3000/api/auditoriumstypes
+{
+  "AUDITORIUM_TYPE": 4,
+  "AUDITORIUM_TYPENAME": "Практическая"
+}
+
+http://localhost:3000/api/auditoriums
+{
+  "AUDITORIUM": 4,
+  "AUDITORIUM_NAME": "400-1",
+  "AUDITORIUM_CAPACITY": 50,
+  "AUDITORIUM_TYPE": 2
+}
+
+http://localhost:3000/api/teachers
+{
+  "TEACHER": 4,
+  "TEACHER_NAME": "Новый Преподаватель",
+  "PULPIT": 2
+}
+
+PUT
+
+http://localhost:3000/api/faculties
+{
+  "FACULTY": 5,
+  "FACULTY_NAME": "Обновлённый факультет"
+}
+
+http://localhost:3000/api/pulpits
+{
+  "PULPIT": 4,
+  "PULPIT_NAME": "Обновлённая кафедра",
+  "FACULTY": 1
+}
+
+http://localhost:3000/api/subjects
+{
+  "SUBJECT": 5,
+  "SUBJECT_NAME": "Обновлённый предмет",
+  "PULPIT": 1
+}
+
+
+http://localhost:3000/api/auditoriumstypes
+{
+  "AUDITORIUM_TYPE": 4,
+  "AUDITORIUM_TYPENAME": "Обновлённая Практическая"
+}
+
+http://localhost:3000/api/auditorims
+{
+  "AUDITORIUM": 4,
+  "AUDITORIUM_NAME": "400-1 Обновлённая",
+  "AUDITORIUM_CAPACITY": 55,
+  "AUDITORIUM_TYPE": 2
+}
+
+http://localhost:3000/api/teachers
+{
+  "TEACHER": 4,
+  "TEACHER_NAME": "Обновлённый Преподаватель",
+  "PULPIT": 2
+}
+
+
+DELETE
+http://localhost:3000/api/faculties/5
+http://localhost:3000/api/pulpits/4
+http://localhost:3000/api/subjects/5
+http://localhost:3000/api/auditoriumtypes/4
+http://localhost:3000/api/auditorims/4
+http://localhost:3000/api/teachers/4
+
+
+
+
+
+

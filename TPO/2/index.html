@@ -1,0 +1,91 @@
+<!DOCTYPE html>
+<html lang="ru">
+<head>
+  <meta charset="UTF-8">
+</head>
+<body>
+  <h1>/api/pulpits</h1>
+
+  <form id="form-get">
+    <h2>GET /api/pulpits</h2>
+    <button type="submit">GET</button>
+    <pre id="get-output"></pre>
+  </form>
+
+  <form id="form-post">
+    <h2>POST /api/pulpits</h2>
+    <label>PULPIT: <input id="post-pulpit" type="number"></label><br>
+    <label>PULPIT_NAME: <input id="post-name" type="text"></label><br>
+    <label>FACULTY: <input id="post-faculty" type="number"></label><br>
+    <button type="submit">POST</button>
+    <pre id="post-output"></pre>
+  </form>
+
+  <form id="form-put">
+    <h2>PUT /api/pulpits</h2>
+    <label>PULPIT: <input id="put-pulpit" type="number"></label><br>
+    <label>PULPIT_NAME: <input id="put-name" type="text"></label><br>
+    <label>FACULTY: <input id="put-faculty" type="number"></label><br>
+    <button type="submit">PUT</button>
+    <pre id="put-output"></pre>
+  </form>
+
+  <form id="form-delete">
+    <h2>DELETE /api/pulpits/xyz</h2>
+    <label>HPO: <input id="delete-id" type="number"></label><br>
+    <button type="submit">DELETE</button>
+    <pre id="delete-output"></pre>
+  </form>
+
+  <script>
+    async function safeFetch(url, options = {}) 
+    {
+      try {
+        const res = await fetch(url, {
+          ...options,
+          headers: { 'Content-Type': 'application/json' }
+        });
+        const data = await res.json();
+        return { ok: res.ok, status: res.status, data };
+      } catch (err) {
+        return { ok: false, status: 0, data: { error: err.message } };
+      }
+    }
+
+    document.getElementById('form-get').onsubmit = async e => {
+      e.preventDefault();
+      const { ok, status, data } = await safeFetch('/api/pulpits');
+      document.getElementById('get-output').textContent = JSON.stringify(data, null, 2);
+    };
+
+    document.getElementById('form-post').onsubmit = async e => {
+      e.preventDefault();
+      const body = {
+        PULPIT: +document.getElementById('post-pulpit').value,
+        PULPIT_NAME: document.getElementById('post-name').value,
+        FACULTY: +document.getElementById('post-faculty').value
+      };
+      const { ok, status, data } = await safeFetch('/api/pulpits', { method: 'POST', body: JSON.stringify(body) });
+      document.getElementById('post-output').textContent = JSON.stringify(data, null, 2);
+    };
+
+    document.getElementById('form-put').onsubmit = async e => {
+      e.preventDefault();
+      const body = {
+        PULPIT: +document.getElementById('put-pulpit').value,
+        PULPIT_NAME: document.getElementById('put-name').value,
+        FACULTY: +document.getElementById('put-faculty').value
+      };
+      const { ok, status, data } = await safeFetch('/api/pulpits', { method: 'PUT', body: JSON.stringify(body) });
+      document.getElementById('put-output').textContent = JSON.stringify(data, null, 2);
+    };
+
+    document.getElementById('form-delete').onsubmit = async e => {
+      e.preventDefault();
+      const id = document.getElementById('delete-id').value;
+      const { ok, status, data } = await safeFetch(`/api/pulpits/${id}`, { method: 'DELETE' });
+      document.getElementById('delete-output').textContent = JSON.stringify(data, null, 2);
+    };
+  </script>
+</body>
+</html>
