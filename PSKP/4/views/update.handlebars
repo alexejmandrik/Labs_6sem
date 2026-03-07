@@ -1,0 +1,21 @@
+{{#each rows}}
+    <a class="row-btn disabled">
+        {{name}} ({{phone}})
+    </a><br>
+{{/each}}
+
+<hr>
+
+<form method="POST" action="/Update">
+    <input type="hidden" name="id" value="{{selected.id}}">
+    <input id="editField" name="name" value="{{selected.name}}" required>
+    <input name="phone" value="{{selected.phone}}" required>
+    <button type="submit">Изменить</button>
+</form>
+
+<form method="POST" action="/Delete">
+    <input type="hidden" name="id" value="{{selected.id}}">
+    <button id="deleteBtn">Удалить</button>
+</form>
+
+{{{cancelButton}}}

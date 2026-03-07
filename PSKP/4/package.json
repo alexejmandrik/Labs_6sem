@@ -1,0 +1,9 @@
+{
+  "dependencies": {
+    "express": "^5.2.1",
+    "express-handlebars": "^8.0.6"
+  },
+  "scripts": {
+    "start": "node server.js"
+  }
+}

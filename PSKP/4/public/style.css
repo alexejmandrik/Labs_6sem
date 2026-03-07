@@ -1,0 +1,12 @@
+.row-btn {
+    display: inline-block;
+    padding: 5px;
+    margin: 3px;
+    background: lightblue;
+    text-decoration: none;
+}
+
+.disabled {
+    pointer-events: none;
+    background: lightgray;
+}

@@ -1,0 +1,15 @@
+{{#each rows}}
+    <a class="row-btn disabled">
+        {{name}} ({{phone}})
+    </a><br>
+{{/each}}
+
+<hr>
+
+<form method="POST" action="/Add">
+    <input name="name" placeholder="Имя" required>
+    <input name="phone" placeholder="Телефон" required>
+    <button type="submit">Добавить</button>
+</form>
+
+{{{cancelButton}}}
