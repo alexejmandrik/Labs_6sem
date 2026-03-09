@@ -59,7 +59,8 @@ CREATE TABLE Licenses (
     CONSTRAINT CHK_Licenses_Dates CHECK (ExpirationDate >= PurchaseDate)
 );
 
-
+ALTER TABLE Licenses
+DROP CONSTRAINT CHK_Licenses_Dates;
 
 
 
@@ -67,25 +68,13 @@ CREATE TABLE Licenses (
 
 
 CREATE VIEW LicenseInfo AS
-SELECT 
-    l.LicenseID,
-    s.SoftwareName,
-    v.VendorName,
-    r.RoomName,
-    dt.DeviceTypeName,
-    l.PurchaseDate,
-    l.ExpirationDate,
-    l.Price,
-    l.LicenseCount
+SELECT l.LicenseID, s.SoftwareName, v.VendorName, r.RoomName, dt.DeviceTypeName,
+    l.PurchaseDate, l.ExpirationDate, l.Price, l.LicenseCount
 FROM Licenses l
 JOIN Software s ON l.SoftwareID = s.SoftwareID
 JOIN Vendors v ON s.VendorID = v.VendorID
 JOIN Rooms r ON l.RoomID = r.RoomID
 JOIN DeviceType dt ON r.DeviceTypeID = dt.DeviceTypeID;
-
-
-
-
 
 CREATE TRIGGER CheckLicenseDates
 ON Licenses
@@ -93,9 +82,7 @@ AFTER INSERT, UPDATE
 AS
 BEGIN
     IF EXISTS (
-        SELECT 1
-        FROM inserted i
-        WHERE i.ExpirationDate < i.PurchaseDate
+        SELECT 1 FROM inserted i WHERE i.ExpirationDate < i.PurchaseDate
     )
     BEGIN
         RAISERROR('Дата окончания лицензии не может быть меньше даты покупки', 16, 1);
@@ -104,44 +91,110 @@ BEGIN
 END;
 
 
+CREATE INDEX LicensesSoftwareID ON Licenses(SoftwareID);
 
 
 
-CREATE PROCEDURE sp_AddLicense
-    @SoftwareID INT,
-    @RoomID INT,
-    @PurchaseDate DATE,
-    @ExpirationDate DATE,
-    @Price DECIMAL(10,2),
-    @LicenseCount INT
+CREATE FUNCTION EndingLicensesCount (@Days INT)
+RETURNS INT
 AS
 BEGIN
-    IF @ExpirationDate < @PurchaseDate
+    DECLARE @Count INT;
+    SELECT @Count = COUNT(*) FROM Licenses WHERE ExpirationDate >= GETDATE() AND ExpirationDate <= DATEADD(DAY, @Days, GETDATE());
+    RETURN @Count;
+END
+
+
+CREATE FUNCTION LicenseCostByRoom (@RoomID INT)
+RETURNS DECIMAL(12,2)
+AS
+BEGIN
+    DECLARE @Total DECIMAL(12,2);
+    SELECT @Total = SUM(Price * LicenseCount) FROM Licenses WHERE RoomID = @RoomID;
+    RETURN ISNULL(@Total,0);
+END
+
+CREATE FUNCTION VendorSoftwareCount (@VendorID INT)
+RETURNS INT
+AS
+BEGIN
+    DECLARE @Count INT;
+    SELECT @Count = COUNT(*) FROM Software WHERE VendorID = @VendorID;
+    RETURN @Count;
+END
+
+CREATE FUNCTION IsLicenseActive (@LicenseID INT)
+RETURNS BIT
+AS
+BEGIN
+    DECLARE @Result BIT;
+    IF EXISTS (SELECT 1 FROM Licenses WHERE LicenseID = @LicenseID AND ExpirationDate >= GETDATE())
+        SET @Result = 1;
+    ELSE
+        SET @Result = 0;
+    RETURN @Result;
+END
+
+CREATE FUNCTION AvgLicenseCount (@SoftwareID INT)
+RETURNS FLOAT
+AS
+BEGIN
+    DECLARE @Avg FLOAT;
+    SELECT @Avg = AVG(LicenseCount) FROM Licenses WHERE SoftwareID = @SoftwareID;
+    RETURN ISNULL(@Avg,0);
+END
+
+
+
+
+
+
+
+CREATE PROCEDURE GetLicensesBySoftware
+    @SoftwareName NVARCHAR(150)
+AS
+BEGIN
+    SELECT * FROM LicenseInfo WHERE SoftwareName = @SoftwareName;
+END;
+
+CREATE PROCEDURE ExtendLicense
+    @LicenseID INT,
+    @Days INT
+AS
+BEGIN
+    UPDATE Licenses SET ExpirationDate = DATEADD(DAY, @Days, ExpirationDate) WHERE LicenseID = @LicenseID;
+END;
+
+
+CREATE PROCEDURE GetExpiredLicenses
+AS
+BEGIN
+    SELECT * FROM LicenseInfo WHERE ExpirationDate < GETDATE();
+END;
+
+
+
+CREATE PROCEDURE UpdateLicensePrice
+    @LicenseID INT,
+    @NewPrice DECIMAL(10,2)
+AS
+BEGIN
+    IF @NewPrice < 0
     BEGIN
-        RAISERROR('Дата окончания не может быть меньше даты покупки', 16, 1);
+        PRINT 'Price cannot be negative';
         RETURN;
     END
-
-    INSERT INTO Licenses(SoftwareID, RoomID, PurchaseDate, ExpirationDate, Price, LicenseCount)
-    VALUES (@SoftwareID, @RoomID, @PurchaseDate, @ExpirationDate, @Price, @LicenseCount);
+    UPDATE Licenses SET Price = @NewPrice WHERE LicenseID = @LicenseID;
 END;
 
 
-
-
-
-CREATE PROCEDURE sp_GetLicensesByVendor
-    @VendorID INT
+CREATE PROCEDURE RoomLicenseReport
+    @RoomID INT
 AS
 BEGIN
-    SELECT *
-    FROM VW_LicenseInfo
-    WHERE VendorName = (SELECT VendorName FROM Vendors WHERE VendorID = @VendorID);
+    SELECT r.RoomName, s.SoftwareName, l.LicenseCount, l.Price,  l.ExpirationDate
+    FROM Licenses l
+    JOIN Software s ON l.SoftwareID = s.SoftwareID
+    JOIN Rooms r ON l.RoomID = r.RoomID WHERE r.RoomID = @RoomID;
 END;
 
-
-
-
-
-
-CREATE INDEX LicensesSoftwareID ON Licenses(SoftwareID);
