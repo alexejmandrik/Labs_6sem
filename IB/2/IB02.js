@@ -66,44 +66,77 @@ function entropyWithBitError(pError) {
     return -( (1 - pError) * Math.log2(1 - pError) + pError * Math.log2(pError) );
 }
 
-function readFileAndCalculate(filename, alphabet, lang, fullName) {
-    fs.readFile(filename, 'utf8', (err, data) => {
-        if (err) {
-            console.error(`Ошибка при чтении файла ${filename}:`, err);
-            return;
-        }
+function readFilesAndPrintPairs(polishFile, bulgarianFile, alphabetPolish, alphabetBulgarian, fullName) {
+    fs.readFile(polishFile, 'utf8', (err1, polishData) => {
+        if (err1) { console.error(err1); return; }
 
-        const resultAlphabet = calculateEntropy(data, alphabet);
-        console.log(`\n  === ${lang} (алфавит) ===`);
-        console.log('  Энтропия H =', resultAlphabet.entropy.toFixed(4), 'бит/символ');
-        console.log('  Частоты символов:', resultAlphabet.frequencies);
-        console.log('  Вероятности символов:', resultAlphabet.probabilities);
+        fs.readFile(bulgarianFile, 'utf8', (err2, bulgarianData) => {
+            if (err2) { console.error(err2); return; }
 
-        const resultBinary = calculateBinaryEntropyFromText(data);
-        console.log(`\n  === ${lang} (бинарный код ASCII) ===`);
-        console.log('  Энтропия H =', resultBinary.H.toFixed(4), 'бит/бит');
-        console.log('  Вероятности: p0 =', resultBinary.p0.toFixed(4), ', p1 =', resultBinary.p1.toFixed(4));
-        console.log('  Частоты: 0 =', resultBinary.count0, ', 1 =', resultBinary.count1);
+            const polishAlpha = calculateEntropy(polishData, alphabetPolish);
+            const bulgarianAlpha = calculateEntropy(bulgarianData, alphabetBulgarian);
 
-        const messageLength = fullName.length;
-        const infoAlphabet = calculateInformation(resultAlphabet.entropy, messageLength);
-        const infoBinary = calculateInformation(resultBinary.H, messageLength * 8); // 8 бит на символ ASCII
-        console.log(`\n   Количество информации в сообщении "${fullName}":`);
-        console.log(`   - по алфавиту: I = ${infoAlphabet.toFixed(4)} бит`);
-        console.log(`   - в бинарном коде ASCII: I = ${infoBinary.toFixed(4)} бит`);
+            console.log(`\n   === Количество встречаемости символов ===`);
+            console.log(`\n   Польский:`);
+            for (const char of alphabetPolish) {
+                console.log(`'   ${char}': ${polishAlpha.frequencies[char]}`);
+            }
 
-        const errors = [0.1, 0.5, 1.0];
-        console.log(`\n   Количество информации с ошибками передачи бита:`);
-        errors.forEach(p => {
-            const H_error = resultBinary.H * (1 - entropyWithBitError(p));
-            console.log(`    p = ${p}: I = ${(H_error * messageLength * 8).toFixed(4)} бит`);
+            console.log(`\n   Болгарский:`);
+            for (const char of alphabetBulgarian) {
+                console.log(`'   ${char}': ${bulgarianAlpha.frequencies[char]}`);
+            }
+
+            console.log(`\n   === Вероятности встречаемости символов ===`);
+            console.log(`\n   Польский:`);
+            for (const char of alphabetPolish) {
+                console.log(`'   ${char}': p = ${polishAlpha.probabilities[char].toFixed(4)}`);
+            }
+
+            console.log(`\n   Болгарский:`);
+            for (const char of alphabetBulgarian) {
+                console.log(`   '${char}': p = ${bulgarianAlpha.probabilities[char].toFixed(4)}`);
+            }
+
+            console.log(`\n   === Польский (алфавит) ===`);
+            console.log(`   Энтропия H = ${polishAlpha.entropy.toFixed(4)} бит/символ`);
+            console.log(`   === Болгарский (алфавит) ===`);
+            console.log(`   Энтропия H = ${bulgarianAlpha.entropy.toFixed(4)} бит/символ`);
+
+            const polishBin = calculateBinaryEntropyFromText(polishData);
+            const bulgarianBin = calculateBinaryEntropyFromText(bulgarianData);
+
+            console.log(`\n   === Польский (бинарный код ASCII) ===`);
+            console.log(`   Энтропия H = ${polishBin.H.toFixed(4)} бит/бит`);
+            console.log(`   Вероятности: p0 = ${polishBin.p0.toFixed(4)} , p1 = ${polishBin.p1.toFixed(4)}`);
+            console.log(`   Частоты: 0 = ${polishBin.count0} , 1 = ${polishBin.count1}`);
+
+            console.log(`\n   === Болгарский (бинарный код ASCII) ===`);
+            console.log(`   Энтропия H = ${bulgarianBin.H.toFixed(4)} бит/бит`);
+            console.log(`   Вероятности: p0 = ${bulgarianBin.p0.toFixed(4)} , p1 = ${bulgarianBin.p1.toFixed(4)}`);
+            console.log(`   Частоты: 0 = ${bulgarianBin.count0} , 1 = ${bulgarianBin.count1}`);
+
+            const infoPolishAlpha = calculateInformation(polishAlpha.entropy, fullName.length);
+            const infoBulgarianAlpha = calculateInformation(bulgarianAlpha.entropy, fullName.length);
+
+            const infoPolishBin = calculateInformation(polishBin.H, fullName.length * 8);
+            const infoBulgarianBin = calculateInformation(bulgarianBin.H, fullName.length * 8);
+
+            console.log(`\n   Количество информации в сообщении "${fullName}":`);
+            console.log(`   - Польский по алфавиту: I = ${infoPolishAlpha.toFixed(4)} бит`);
+            console.log(`   - Болгарский по алфавиту: I = ${infoBulgarianAlpha.toFixed(4)} бит`);
+            console.log(`   - Польский в бинарном коде: I = ${infoPolishBin.toFixed(4)} бит`);
+            console.log(`   - Болгарский в бинарном коде: I = ${infoBulgarianBin.toFixed(4)} бит`);
+
+            const errors = [0.1, 0.5, 1.0];
+            console.log(`\n   Количество информации с ошибками передачи бита:`);
+            errors.forEach(p => {
+                const H_polish_err = polishBin.H * (1 - entropyWithBitError(p));
+                const H_bulgarian_err = bulgarianBin.H * (1 - entropyWithBitError(p));
+                console.log(`   p = ${p}: Польский I = ${(H_polish_err * fullName.length * 8).toFixed(4)} бит, Болгарский I = ${(H_bulgarian_err * fullName.length * 8).toFixed(4)} бит`);
+            });
         });
     });
 }
 
-const polishFile = 'polish.txt';
-const bulgarianFile = 'bulgarian.txt';
-const myFullName = 'Mandrik Aliaksei Ivanovich';
-
-readFileAndCalculate(polishFile, polishAlphabet, 'Польский', myFullName);
-readFileAndCalculate(bulgarianFile, bulgarianAlphabet, 'Болгарский', myFullName);
+readFilesAndPrintPairs('polish.txt', 'bulgarian.txt', polishAlphabet, bulgarianAlphabet, 'Mandrik Aliaksei Ivanovich');

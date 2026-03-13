@@ -174,17 +174,16 @@ END;
 
 
 
-CREATE PROCEDURE UpdateLicensePrice
-    @LicenseID INT,
-    @NewPrice DECIMAL(10,2)
+CREATE PROCEDURE RoomLicensesCount
 AS
 BEGIN
-    IF @NewPrice < 0
-    BEGIN
-        PRINT 'Price cannot be negative';
-        RETURN;
-    END
-    UPDATE Licenses SET Price = @NewPrice WHERE LicenseID = @LicenseID;
+    SELECT 
+        r.RoomName,
+        ISNULL(SUM(l.LicenseCount), 0) AS TotalLicenses
+    FROM Rooms r
+    LEFT JOIN Licenses l ON r.RoomID = l.RoomID
+    GROUP BY r.RoomName
+    ORDER BY TotalLicenses DESC;
 END;
 
 

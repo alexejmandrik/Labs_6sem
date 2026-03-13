@@ -48,3 +48,7 @@ VALUES (5, 4, DATE '2022-09-20', DATE '2027-09-20', 1000.00, 5);
 
 INSERT INTO Licenses (SoftwareID, RoomID, PurchaseDate, ExpirationDate, Price, LicenseCount)
 VALUES (6, 3, DATE '2024-01-12', DATE '2027-01-12', 400.00, 12);
+
+
+INSERT INTO Licenses (SoftwareID, RoomID, PurchaseDate, ExpirationDate, Price, LicenseCount)
+VALUES (4, 2, DATE '2023-05-10', DATE '2026-05-10', 500.00, 20);
