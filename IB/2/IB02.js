@@ -34,21 +34,23 @@ function calculateEntropy(text, alphabet) {
     return { entropy: H, frequencies: freq, probabilities: probs };
 }
 
-function calculateBinaryEntropyFromText(text) {
+function calculateBinaryEntropyFromText(text, bits) {
     let binaryString = '';
+
     for (const char of text) {
         const code = char.charCodeAt(0);
-        binaryString += code.toString(2).padStart(8, '0'); 
+        binaryString += code.toString(2).padStart(bits, '0');
     }
 
-
     let count0 = 0, count1 = 0;
+
     for (const bit of binaryString) {
         if (bit === '0') count0++;
         else count1++;
     }
 
     const total = count0 + count1;
+
     const p0 = count0 / total;
     const p1 = count1 / total;
 
@@ -103,8 +105,8 @@ function readFilesAndPrintPairs(polishFile, bulgarianFile, alphabetPolish, alpha
             console.log(`   === Болгарский (алфавит) ===`);
             console.log(`   Энтропия H = ${bulgarianAlpha.entropy.toFixed(4)} бит/символ`);
 
-            const polishBin = calculateBinaryEntropyFromText(polishData);
-            const bulgarianBin = calculateBinaryEntropyFromText(bulgarianData);
+            const polishBin = calculateBinaryEntropyFromText(polishData, 8);
+            const bulgarianBin = calculateBinaryEntropyFromText(bulgarianData, 16);
 
             console.log(`\n   === Польский (бинарный код ASCII) ===`);
             console.log(`   Энтропия H = ${polishBin.H.toFixed(4)} бит/бит`);
@@ -120,7 +122,7 @@ function readFilesAndPrintPairs(polishFile, bulgarianFile, alphabetPolish, alpha
             const infoBulgarianAlpha = calculateInformation(bulgarianAlpha.entropy, fullName.length);
 
             const infoPolishBin = calculateInformation(polishBin.H, fullName.length * 8);
-            const infoBulgarianBin = calculateInformation(bulgarianBin.H, fullName.length * 8);
+            const infoBulgarianBin = calculateInformation(bulgarianBin.H, fullName.length * 16);
 
             console.log(`\n   Количество информации в сообщении "${fullName}":`);
             console.log(`   - Польский по алфавиту: I = ${infoPolishAlpha.toFixed(4)} бит`);

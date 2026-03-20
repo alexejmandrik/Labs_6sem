@@ -1,6 +1,5 @@
 const readline = require("readline");
 
-// --- Проверка простоты числа ---
 function isPrime(n) {
     if (n < 2) return false;
     for (let i = 2; i <= Math.sqrt(n); i++) {
@@ -9,7 +8,6 @@ function isPrime(n) {
     return true;
 }
 
-// --- Поиск простых чисел на интервале ---
 function findPrimes(start, end) {
     const primes = [];
     for (let i = start; i <= end; i++) {
@@ -33,6 +31,35 @@ function gcdThree(a, b, c) {
     return gcd(gcd(a, b), c);
 }
 
+// --- Разложение на простые множители (каноническая форма) ---
+function primeFactorization(n) {
+    const factors = {};
+    let divisor = 2;
+
+    while (n >= 2) {
+        if (n % divisor === 0) {
+            factors[divisor] = (factors[divisor] || 0) + 1;
+            n = n / divisor;
+        } else {
+            divisor++;
+        }
+    }
+
+    return factors;
+}
+
+// --- Красивый вывод канонической формы ---
+function formatFactors(factors) {
+    return Object.entries(factors)
+        .map(([prime, power]) => power > 1 ? `${prime}^${power}` : prime)
+        .join(" * ");
+}
+
+// --- Конкатенация чисел ---
+function concatNumbers(m, n) {
+    return Number(String(m) + String(n));
+}
+
 const rl = readline.createInterface({
     input: process.stdin,
     output: process.stdout
@@ -43,6 +70,7 @@ function menu() {
     console.log("1 - Найти простые числа в интервале");
     console.log("2 - Найти НОД двух чисел");
     console.log("3 - Найти НОД трех чисел");
+    console.log("4 - Разложить m и n на простые множители и проверить m||n");
     console.log("0 - Выход");
 
     rl.question("Ваш выбор: ", (choice) => {
@@ -74,6 +102,33 @@ function menu() {
                             console.log("НОД =", gcdThree(Number(a), Number(b), Number(c)));
                             menu();
                         });
+                    });
+                });
+                break;
+
+            case "4":
+                rl.question("Введите m: ", (m) => {
+                    rl.question("Введите n: ", (n) => {
+
+                        m = Number(m);
+                        n = Number(n);
+
+                        const mFactors = primeFactorization(m);
+                        const nFactors = primeFactorization(n);
+
+                        console.log(`m = ${m} = ${formatFactors(mFactors)}`);
+                        console.log(`n = ${n} = ${formatFactors(nFactors)}`);
+
+                        const concat = concatNumbers(m, n);
+                        console.log(`m||n = ${concat}`);
+
+                        if (isPrime(concat)) {
+                            console.log("Число m||n является простым.");
+                        } else {
+                            console.log("Число m||n не является простым.");
+                        }
+
+                        menu();
                     });
                 });
                 break;
