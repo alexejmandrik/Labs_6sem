@@ -25,11 +25,9 @@ CREATE TABLE Vendors (
 
 
 CREATE TABLE SoftwareCategories (
-    CategoryID INT IDENTITY(1,1) PRIMARY KEY,
-    CategoryName NVARCHAR(100) NOT NULL UNIQUE,
-    ParentCategoryID INT NULL,
-    CONSTRAINT FK_SoftwareCategories_Parent FOREIGN KEY (ParentCategoryID)
-        REFERENCES SoftwareCategories(CategoryID)
+    CategoryId INT PRIMARY KEY IDENTITY,
+    CategoryName NVARCHAR(100) NOT NULL,
+    Hierarchy hierarchyid NOT NULL
 );
 
 CREATE TABLE Software (
@@ -61,6 +59,14 @@ CREATE TABLE Licenses (
 
 ALTER TABLE Licenses
 DROP CONSTRAINT CHK_Licenses_Dates;
+
+
+drop table DeviceType;
+drop table Rooms;
+drop table Vendors
+drop table SoftwareCategories
+drop table Software
+drop table Licenses
 
 
 

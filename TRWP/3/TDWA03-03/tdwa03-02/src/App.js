@@ -7,7 +7,7 @@ function App() {
   const [y, setY] = useState("");
   const [result, setResult] = useState("");
 
-  const baseUrl = "http://localhost:20000/api/Save-JSON";
+  const baseUrl = "https://localhost:20443/api/Save-JSON";
 
   const handleGET = async () => {
     const response = await fetch(baseUrl);

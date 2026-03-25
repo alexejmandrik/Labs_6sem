@@ -1,7 +1,6 @@
 const fs = require('fs');
 const readline = require('readline');
 
-// Польский алфавит
 const alphabet = "AĄBCĆDEĘFGHIJKLŁMNŃOÓPRSŚTUWYZŹŻ";
 const N = alphabet.length;
 
@@ -32,36 +31,75 @@ function caesarDecrypt(text) {
 // ШИФР ПОРТЫ
 // ======================
 function portaEncrypt(text) {
+    text = text.toUpperCase();
+
+    const tokens = text.split(/(\s+|[.,!?;:–-])/);
     let result = [];
-    if (text.length % 2 !== 0) text += 'A';
 
-    for (let i = 0; i < text.length; i += 2) {
-        const a = alphabet.indexOf(text[i]);
-        const b = alphabet.indexOf(text[i + 1]);
+    for (let token of tokens) {
 
-        if (a === -1 || b === -1) {
-            result.push(text[i] + text[i + 1]);
+        // если это не слово — оставить как есть
+        if (!/^[A-ZĄĆĘŁŃÓŚŹŻ]+$/.test(token)) {
+            result.push(token);
             continue;
         }
 
-        const value = a * N + b + 1;
-        result.push(value.toString().padStart(4, '0'));
+        let word = token;
+
+        if (word.length % 2 !== 0) {
+            word += 'A';
+        }
+
+        let encodedWord = '';
+
+        for (let i = 0; i < word.length; i += 2) {
+            const a = alphabet.indexOf(word[i]);
+            const b = alphabet.indexOf(word[i + 1]);
+
+            const value = a * N + b + 1;
+
+            // БЕЗ пробелов
+            encodedWord += value.toString().padStart(4, '0');
+        }
+
+        result.push(encodedWord);
     }
-    return result.join(' ');
+
+    return result.join('');
 }
 
 function portaDecrypt(text) {
-    return text.split(' ').map(code => {
-        const value = parseInt(code) - 1;
-        const a = Math.floor(value / N);
-        const b = value % N;
-        return alphabet[a] + alphabet[b];
-    }).join('');
+    let result = '';
+
+    const tokens = text.split(/(\s+|[.,!?;:–-])/);
+
+    for (let token of tokens) {
+
+        // если это не цифры — оставляем как есть
+        if (!/^\d+$/.test(token)) {
+            result += token;
+            continue;
+        }
+
+        // разбиваем по 4 цифры
+        for (let i = 0; i < token.length; i += 4) {
+            const code = token.substring(i, i + 4);
+
+            if (code.length < 4) continue;
+
+            const value = parseInt(code) - 1;
+
+            const a = Math.floor(value / N);
+            const b = value % N;
+
+            result += alphabet[a] + alphabet[b];
+        }
+    }
+
+    return result;
 }
 
-// ======================
-// ВЕРОЯТНОСТИ
-// ======================
+//Вероятность
 function frequencyAnalysis(text) {
     const freq = {};
     let total = 0;
@@ -83,6 +121,30 @@ function frequencyAnalysis(text) {
     return probabilities;
 }
 
+function digitFrequencyAnalysis(text) {
+    const freq = {};
+    let total = 0;
+
+    // цифры от 0 до 9
+    for (let i = 0; i <= 9; i++) {
+        freq[i] = 0;
+    }
+
+    for (let char of text) {
+        if (/[0-9]/.test(char)) {
+            freq[char]++;
+            total++;
+        }
+    }
+
+    const probabilities = {};
+    for (let digit in freq) {
+        probabilities[digit] = total > 0 ? freq[digit] / total : 0;
+    }
+
+    return probabilities;
+}
+
 function printProbabilities(prob) {
     console.log("\n=== Вероятности ===");
     for (let char in prob) {
@@ -90,9 +152,7 @@ function printProbabilities(prob) {
     }
 }
 
-// ======================
 // ВРЕМЯ
-// ======================
 function measureTime(fn, text) {
     const start = Date.now();
     const result = fn(text);
@@ -103,9 +163,6 @@ function measureTime(fn, text) {
     };
 }
 
-// ======================
-// МЕНЮ
-// ======================
 const rl = readline.createInterface({
     input: process.stdin,
     output: process.stdout
@@ -113,8 +170,7 @@ const rl = readline.createInterface({
 
 console.log("\n===== МЕНЮ =====");
 console.log("1 - Зашифровать input.txt");
-console.log("2 - Расшифровать caesar_encrypted.txt");
-console.log("3 - Расшифровать porta_encrypted.txt");
+console.log("2 - Расшифровать все файлы");
 console.log("0 - Выход");
 
 rl.question("Выберите действие: ", (choice) => {
@@ -130,46 +186,54 @@ rl.question("Выберите действие: ", (choice) => {
             fs.writeFileSync('caesar_encrypted.txt', caesarEnc.result);
             fs.writeFileSync('porta_encrypted.txt', portaEnc.result);
 
-            console.log("\n=== ГОТОВО ===");
-            console.log("Цезарь (время):", caesarEnc.time, "мс");
-            console.log("Порта (время):", portaEnc.time, "мс");
+            console.log("\n    === ГОТОВО ===");
+            console.log("    Цезарь (время):", caesarEnc.time, "мс");
+            console.log("    Порта (время):", portaEnc.time, "мс");
 
             const probOriginal = frequencyAnalysis(inputText);
             const probCaesar = frequencyAnalysis(caesarEnc.result);
 
-            console.log("\n--- Вероятности исходного текста ---");
+            console.log("\n    --- Вероятности исходного текста ---");
             printProbabilities(probOriginal);
 
-            console.log("\n--- Вероятности текста после Цезаря ---");
+            console.log("\n    --- Вероятности текста после Цезаря ---");
             printProbabilities(probCaesar);
+
+
+            const probPortaDigits = digitFrequencyAnalysis(portaEnc.result);
+
+            console.log("\n    --- Вероятности цифр (Порта) ---");
+            printProbabilities(probPortaDigits);
 
             break;
         }
 
         case "2": {
-            const text = fs.readFileSync('caesar_encrypted.txt', 'utf-8');
-            const result = measureTime(caesarDecrypt, text);
-            fs.writeFileSync('caesar_decrypted.txt', result.result);
-            console.log("\n=== ДЕШИФРОВАНО ===");
-            console.log("Время:", result.time, "мс");
-            break;
-        }
+            // Читаем оба файла
+            const caesarText = fs.readFileSync('caesar_encrypted.txt', 'utf-8');
+            const portaText = fs.readFileSync('porta_encrypted.txt', 'utf-8');
 
-        case "3": {
-            const text = fs.readFileSync('porta_encrypted.txt', 'utf-8');
-            const result = measureTime(portaDecrypt, text);
-            fs.writeFileSync('porta_decrypted.txt', result.result);
-            console.log("\n=== ДЕШИФРОВАНО ===");
-            console.log("Время:", result.time, "мс");
+            // Дешифрование с измерением времени
+            const caesarDec = measureTime(caesarDecrypt, caesarText);
+            const portaDec = measureTime(portaDecrypt, portaText);
+
+            // Запись результатов
+            fs.writeFileSync('caesar_decrypted.txt', caesarDec.result);
+            fs.writeFileSync('porta_decrypted.txt', portaDec.result);
+
+            console.log("\n    === ДЕШИФРОВАНО ===");
+            console.log("    Цезарь (время):", caesarDec.time, "мс");
+            console.log("    Порта (время):", portaDec.time, "мс");
+
             break;
         }
 
         case "0":
-            console.log("Выход...");
+            console.log("    Выход...");
             break;
 
         default:
-            console.log("Неверный выбор");
+            console.log("    Неверный выбор");
     }
 
     rl.close();
