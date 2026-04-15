@@ -1,0 +1,20 @@
+[
+  {
+    "id": 0,
+    "fullname": "Emma Watson",
+    "nationality": "British",
+    "reqPhotoPath": "/photos/emma_watson.jpg"
+  },
+  {
+    "id": 1,
+    "fullname": "Tom Slon1234",
+    "nationality": "American",
+    "reqPhotoPath": "/photos/tom_hanks.jpg"
+  },
+  {
+    "id": 2,
+    "fullname": "Tom Slon1234",
+    "nationality": "American",
+    "reqPhotoPath": "/photos/tom_hanks.jpg"
+  }
+]

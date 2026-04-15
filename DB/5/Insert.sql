@@ -129,3 +129,34 @@ INSERT INTO Licenses
 (2, 3, '2025-09-01', '2026-09-01', 80, 10),
 (3, 4, '2025-10-10', '2026-10-10', 200, 4),
 (4, 5, '2025-11-11', '2026-11-11', 150, 6);
+
+
+DECLARE @i INT = 1;
+
+WHILE @i <= 100
+BEGIN
+    INSERT INTO Licenses 
+    (SoftwareID, RoomID, PurchaseDate, ExpirationDate, Price, LicenseCount)
+    VALUES
+    (
+        -- случайное ѕќ (1Ц5)
+        (ABS(CHECKSUM(NEWID())) % 5) + 1,
+
+        -- случайна€ комната (1Ц5)
+        (ABS(CHECKSUM(NEWID())) % 5) + 1,
+
+        -- случайна€ дата 2025 года
+        DATEADD(DAY, (ABS(CHECKSUM(NEWID())) % 365), '2025-01-01'),
+
+        -- +1 год
+        DATEADD(YEAR, 1, DATEADD(DAY, (ABS(CHECKSUM(NEWID())) % 365), '2025-01-01')),
+
+        -- случайна€ цена
+        (ABS(CHECKSUM(NEWID())) % 250) + 50,
+
+        -- случайное количество лицензий
+        (ABS(CHECKSUM(NEWID())) % 20) + 1
+    );
+
+    SET @i = @i + 1;
+END;

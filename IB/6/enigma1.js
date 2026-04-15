@@ -1,12 +1,12 @@
 const ALPHABET = "ABCDEFGHIJKLMNOPQRSTUVWXYZ";
 
 const ROTORS = {
-  L: "LEYJVCNIXWPBQMDRTAKZGFUHOS",
-  M: "FSOKANUERHMBTIYCWLQPZXVGJD",
-  R: "VZBRGITYUPSDNHLXAWMJQOFECK",
+  L: "BDFHJLCPRTXVZNYEIWGAKMUSQO",
+  M: "NZJHGRCXMYSWBOUFAIVLPEKQDT",
+  R: "EKMFLGDQVZNTOWYHXUSPAIBRCJ",
 };
 
-const REFLECTOR = "AEBNCKDQFUGYHWIJLOMPRXSZTV";
+const REFLECTOR = "AEBNCKDQFUGYHWILJOMPXRSZTV";
 
 class Rotor {
   constructor(wiring, position = 0) {
@@ -83,7 +83,7 @@ class Enigma {
   }
 }
 
-const message = "найди ";
+const message = "AA";
 
 const settings = [
   [0, 0, 0],

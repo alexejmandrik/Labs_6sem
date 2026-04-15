@@ -18,10 +18,10 @@ class TestSauceDemo(unittest.TestCase):
 
     def login(self):
         driver = self.driver
-        driver.get("https://www.saucedemo.com/")
+        driver.get("https://www.ydachnik.by/")
 
-        driver.find_element(By.ID, "user-name").send_keys("standard_user")
-        driver.find_element(By.ID, "password").send_keys("secret_sauce")
+        driver.find_element(By.ID, "user-name").send_keys("alexej.mandrik.2005@gmail.com")
+        driver.find_element(By.ID, "password").send_keys("L2e0sch0a5")
         driver.find_element(By.ID, "login-button").click()
 
         WebDriverWait(driver, 10).until(
