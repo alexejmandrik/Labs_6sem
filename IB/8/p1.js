@@ -8,11 +8,11 @@ function gcd(a, b) {
 }
 
 const p = 23;
-const q = 23;
+const q = 15;
 const n = p * q;
 
 // начальное значение (взаимно простое с n)
-let x = 5;
+let x = 4;
 if (gcd(x, n) !== 1) {
     throw new Error("x должно быть взаимно простым с n");
 }

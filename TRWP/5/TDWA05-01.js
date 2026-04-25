@@ -44,3 +44,40 @@ const server = http.createServer((req, res) => {
 server.listen(port, () => {
     console.log(`Server ${nick} running on port ${port} with delay ${delay}`);
 });
+
+
+// RoundRobin
+// CookieStickySessions
+// CustomBalancer
+
+
+// $methods = @("GET", "POST", "PUT", "DELETE")
+
+// foreach ($method in $methods) {
+//     for ($i = 0; $i -lt 50; $i++) {
+//         $response = Invoke-RestMethod -Uri "http://localhost:5185/lb" -Method $method
+//         "$method -> $($response.Nick)" | Out-File -Append results.txt
+//     }
+// }
+
+
+// Get-Content results.txt | Group-Object | Sort-Object Count -Descending
+
+
+
+
+
+$session = New-Object Microsoft.PowerShell.Commands.WebRequestSession
+
+$methods = @("GET", "POST", "PUT", "DELETE")
+
+foreach ($method in $methods) {
+    for ($i = 0; $i -lt 15; $i++) {
+        $response = Invoke-RestMethod `
+            -Uri "http://localhost:5185/lb" `
+            -Method $method `
+            -WebSession $session
+
+        "$method -> $($response.Nick)" | Out-File -Append results.txt
+    }
+}

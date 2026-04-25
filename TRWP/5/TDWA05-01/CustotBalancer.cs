@@ -1,39 +1,125 @@
-﻿using Ocelot.LoadBalancer.Interfaces;
+﻿using Microsoft.AspNetCore.Http;
+using Microsoft.Extensions.DependencyInjection;
+using Ocelot.Configuration;
+using Ocelot.DependencyInjection;
+using Ocelot.LoadBalancer.Interfaces;
 using Ocelot.Responses;
+using Ocelot.ServiceDiscovery.Providers;
 using Ocelot.Values;
 
 public class CustomBalancer : ILoadBalancer
 {
-    private readonly List<ServiceHostAndPort> _services;
+    private readonly Func<Task<List<Service>>> _services;
+    private readonly List<ServiceHostAndPort> _routeHosts;
     private readonly Random _random = new();
 
-    public string Type => "CustomBalancer";
+    public string Type => nameof(CustomBalancer);
 
-    public CustomBalancer(List<ServiceHostAndPort> services)
+    public CustomBalancer()
+        : this(() => Task.FromResult(new List<Service>()), new List<ServiceHostAndPort>())
+    {
+    }
+
+    public CustomBalancer(Func<Task<List<Service>>> services, List<ServiceHostAndPort> routeHosts)
     {
         _services = services;
+        _routeHosts = routeHosts;
     }
 
-    public Task<Response<ServiceHostAndPort>> LeaseAsync(HttpContext httpContext)
+    public async Task<Response<ServiceHostAndPort>> LeaseAsync(HttpContext httpContext)
     {
-        var r = _random.Next(100);
+        var services = await _services();
+        var hosts = services.Select(s => s.HostAndPort).ToList();
+        if (hosts.Count == 0)
+        {
+            hosts = _routeHosts;
+        }
+        if (hosts.Count == 0)
+        {
+            hosts = TryGetHostsFromContext(httpContext);
+        }
 
-        ServiceHostAndPort selected;
+        if (hosts.Count == 0)
+        {
+            throw new InvalidOperationException("No downstream services are available for CustomBalancer.");
+        }
 
-        if (r < 50)
-            selected = _services[0]; // X
-        else if (r < 80)
-            selected = _services[1]; // Y
-        else
-            selected = _services[2]; // Z
+        // 50% / 30% / 20%
+        var value = _random.Next(1, 101);
+        var index = value <= 50 ? 0 : value <= 80 ? 1 : 2;
+        if (index >= hosts.Count)
+        {
+            index = hosts.Count - 1;
+        }
 
-        return Task.FromResult<Response<ServiceHostAndPort>>(
-            new OkResponse<ServiceHostAndPort>(selected)
-        );
+        return new OkResponse<ServiceHostAndPort>(hosts[index]);
     }
 
-    public void Release(ServiceHostAndPort service)
+    public void Release(ServiceHostAndPort hostAndPort)
     {
-        // ничего не делаем
+    }
+
+    private static List<ServiceHostAndPort> TryGetHostsFromContext(HttpContext httpContext)
+    {
+        var result = new List<ServiceHostAndPort>();
+        if (!httpContext.Items.TryGetValue("DownstreamRoute", out var downstreamRouteObj) || downstreamRouteObj is null)
+        {
+            return result;
+        }
+
+        var routeType = downstreamRouteObj.GetType();
+        var addressesProp = routeType.GetProperty("DownstreamAddresses");
+        var addresses = addressesProp?.GetValue(downstreamRouteObj) as System.Collections.IEnumerable;
+        if (addresses is null)
+        {
+            return result;
+        }
+
+        foreach (var address in addresses)
+        {
+            if (address is null)
+            {
+                continue;
+            }
+
+            var addressType = address.GetType();
+            var host = addressType.GetProperty("Host")?.GetValue(address) as string;
+            var portObj = addressType.GetProperty("Port")?.GetValue(address);
+            if (string.IsNullOrWhiteSpace(host) || portObj is null)
+            {
+                continue;
+            }
+
+            result.Add(new ServiceHostAndPort(host, (int)portObj));
+        }
+
+        return result;
+    }
+}
+
+public class CustomBalancerCreator : ILoadBalancerCreator
+{
+    public string Type => nameof(CustomBalancer);
+
+    public Response<ILoadBalancer> Create(DownstreamRoute route, IServiceDiscoveryProvider serviceDiscoveryProvider)
+    {
+        var routeHosts = route.DownstreamAddresses?
+            .Select(x => new ServiceHostAndPort(x.Host, x.Port))
+            .ToList()
+            ?? new List<ServiceHostAndPort>();
+        return new OkResponse<ILoadBalancer>(new CustomBalancer(serviceDiscoveryProvider.GetAsync, routeHosts));
+    }
+}
+
+public static class OcelotNamedServiceCompatibilityExtensions
+{
+    public static IServiceCollection AddSingletonNamedService<TService, TImplementation>(
+        this IServiceCollection services,
+        string name)
+        where TService : class
+        where TImplementation : class, TService
+    {
+        services.AddSingleton<TService, TImplementation>();
+        return services;
     }
 }

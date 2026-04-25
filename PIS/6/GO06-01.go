@@ -20,7 +20,6 @@ type Celebrity struct {
 
 var db *gorm.DB
 
-// ---------------- DB INIT ----------------
 func initDB() {
 	dsn := "sqlserver://pis_user:1234@localhost:1433?database=PIS&encrypt=disable&trustservercertificate=true"
 
@@ -30,7 +29,6 @@ func initDB() {
 		log.Fatal("DB connection error:", err)
 	}
 
-	// 🔥 САМО СОЗДАЁТ ТАБЛИЦУ
 	err = db.AutoMigrate(&Celebrity{})
 	if err != nil {
 		log.Fatal("AutoMigrate error:", err)
@@ -39,7 +37,6 @@ func initDB() {
 	log.Println("Connected to SQL Server + AutoMigrate OK")
 }
 
-// ---------------- GET ALL ----------------
 func getAllCelebrities(w http.ResponseWriter, r *http.Request) {
 	var celebrities []Celebrity
 
@@ -48,10 +45,12 @@ func getAllCelebrities(w http.ResponseWriter, r *http.Request) {
 		return
 	}
 
-	json.NewEncoder(w).Encode(celebrities)
+	w.Header().Set("Content-Type", "application/json")
+	encoder := json.NewEncoder(w)
+	encoder.SetIndent("", "  ")
+	encoder.Encode(celebrities)
 }
 
-// ---------------- GET BY ID ----------------
 func getCelebrity(w http.ResponseWriter, r *http.Request) {
 	id, _ := strconv.Atoi(mux.Vars(r)["id"])
 
@@ -64,7 +63,6 @@ func getCelebrity(w http.ResponseWriter, r *http.Request) {
 	json.NewEncoder(w).Encode(c)
 }
 
-// ---------------- POST ----------------
 func createCelebrity(w http.ResponseWriter, r *http.Request) {
 	var c Celebrity
 
@@ -73,7 +71,6 @@ func createCelebrity(w http.ResponseWriter, r *http.Request) {
 		return
 	}
 
-	// ID не должен дублироваться
 	var existing Celebrity
 	if err := db.First(&existing, c.ID).Error; err == nil {
 		http.Error(w, "ID already exists", http.StatusConflict)
@@ -88,7 +85,6 @@ func createCelebrity(w http.ResponseWriter, r *http.Request) {
 	json.NewEncoder(w).Encode(c)
 }
 
-// ---------------- PUT (FIXED) ----------------
 func updateCelebrity(w http.ResponseWriter, r *http.Request) {
 	paramID, _ := strconv.Atoi(mux.Vars(r)["id"])
 
@@ -105,7 +101,6 @@ func updateCelebrity(w http.ResponseWriter, r *http.Request) {
 		return
 	}
 
-	// ❗ нельзя занять чужой ID
 	if updated.ID != paramID {
 		var conflict Celebrity
 		if err := db.First(&conflict, updated.ID).Error; err == nil {
@@ -127,7 +122,6 @@ func updateCelebrity(w http.ResponseWriter, r *http.Request) {
 	json.NewEncoder(w).Encode(current)
 }
 
-// ---------------- DELETE ----------------
 func deleteCelebrity(w http.ResponseWriter, r *http.Request) {
 	id, _ := strconv.Atoi(mux.Vars(r)["id"])
 
@@ -139,7 +133,6 @@ func deleteCelebrity(w http.ResponseWriter, r *http.Request) {
 	w.WriteHeader(http.StatusNoContent)
 }
 
-// ---------------- MAIN ----------------
 func main() {
 	initDB()
 

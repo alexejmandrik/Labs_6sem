@@ -6,7 +6,7 @@
       "DownstreamPathTemplate": "/A",
       "DownstreamScheme": "http",
       "LoadBalancerOptions": {
-        "Type": "RoundRobin"
+        "Type": "CustomBalancer"
       },
       "DownstreamHostAndPorts": [
         {

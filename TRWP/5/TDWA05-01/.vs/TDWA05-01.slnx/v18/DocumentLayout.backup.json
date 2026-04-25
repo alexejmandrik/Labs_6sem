@@ -3,16 +3,24 @@
   "WorkspaceRootPath": "D:\\Labs_6\\TRWP\\5\\TDWA05-01\\",
   "Documents": [
     {
-      "AbsoluteMoniker": "D:0:0:{7C2DB00F-67F4-43FE-91A0-6C5C8F9F13C5}|TDWA05-01.csproj|d:\\labs_6\\trwp\\5\\tdwa05-01\\program.cs||{A6C744A8-0E4A-4FC6-886A-064283054674}",
-      "RelativeMoniker": "D:0:0:{7C2DB00F-67F4-43FE-91A0-6C5C8F9F13C5}|TDWA05-01.csproj|solutionrelative:program.cs||{A6C744A8-0E4A-4FC6-886A-064283054674}"
+      "AbsoluteMoniker": "D:0:0:{F6E4CAEB-26B8-82FB-E517-221F8D78B836}|TDWA05-01.csproj|d:\\labs_6\\trwp\\5\\tdwa05-01\\custotbalancer.cs||{A6C744A8-0E4A-4FC6-886A-064283054674}",
+      "RelativeMoniker": "D:0:0:{F6E4CAEB-26B8-82FB-E517-221F8D78B836}|TDWA05-01.csproj|solutionrelative:custotbalancer.cs||{A6C744A8-0E4A-4FC6-886A-064283054674}"
     },
     {
-      "AbsoluteMoniker": "D:0:0:{7C2DB00F-67F4-43FE-91A0-6C5C8F9F13C5}|TDWA05-01.csproj|d:\\labs_6\\trwp\\5\\tdwa05-01\\ocelot.json||{90A6B3A7-C1A3-4009-A288-E2FF89E96FA0}",
-      "RelativeMoniker": "D:0:0:{7C2DB00F-67F4-43FE-91A0-6C5C8F9F13C5}|TDWA05-01.csproj|solutionrelative:ocelot.json||{90A6B3A7-C1A3-4009-A288-E2FF89E96FA0}"
+      "AbsoluteMoniker": "D:0:0:{F6E4CAEB-26B8-82FB-E517-221F8D78B836}|TDWA05-01.csproj|d:\\labs_6\\trwp\\5\\tdwa05-01\\creater.cs||{A6C744A8-0E4A-4FC6-886A-064283054674}",
+      "RelativeMoniker": "D:0:0:{F6E4CAEB-26B8-82FB-E517-221F8D78B836}|TDWA05-01.csproj|solutionrelative:creater.cs||{A6C744A8-0E4A-4FC6-886A-064283054674}"
     },
     {
-      "AbsoluteMoniker": "D:0:0:{7C2DB00F-67F4-43FE-91A0-6C5C8F9F13C5}|TDWA05-01.csproj|d:\\labs_6\\trwp\\5\\tdwa05-01\\custotbalancer.cs||{A6C744A8-0E4A-4FC6-886A-064283054674}",
-      "RelativeMoniker": "D:0:0:{7C2DB00F-67F4-43FE-91A0-6C5C8F9F13C5}|TDWA05-01.csproj|solutionrelative:custotbalancer.cs||{A6C744A8-0E4A-4FC6-886A-064283054674}"
+      "AbsoluteMoniker": "D:0:0:{F6E4CAEB-26B8-82FB-E517-221F8D78B836}|TDWA05-01.csproj|d:\\labs_6\\trwp\\5\\tdwa05-01\\ocelot.json||{90A6B3A7-C1A3-4009-A288-E2FF89E96FA0}",
+      "RelativeMoniker": "D:0:0:{F6E4CAEB-26B8-82FB-E517-221F8D78B836}|TDWA05-01.csproj|solutionrelative:ocelot.json||{90A6B3A7-C1A3-4009-A288-E2FF89E96FA0}"
+    },
+    {
+      "AbsoluteMoniker": "D:0:0:{F6E4CAEB-26B8-82FB-E517-221F8D78B836}|TDWA05-01.csproj|d:\\labs_6\\trwp\\5\\tdwa05-01\\program.cs||{A6C744A8-0E4A-4FC6-886A-064283054674}",
+      "RelativeMoniker": "D:0:0:{F6E4CAEB-26B8-82FB-E517-221F8D78B836}|TDWA05-01.csproj|solutionrelative:program.cs||{A6C744A8-0E4A-4FC6-886A-064283054674}"
+    },
+    {
+      "AbsoluteMoniker": "D:0:0:{F6E4CAEB-26B8-82FB-E517-221F8D78B836}|TDWA05-01.csproj|d:\\labs_6\\trwp\\5\\tdwa05-01\\appsettings.json||{90A6B3A7-C1A3-4009-A288-E2FF89E96FA0}",
+      "RelativeMoniker": "D:0:0:{F6E4CAEB-26B8-82FB-E517-221F8D78B836}|TDWA05-01.csproj|solutionrelative:appsettings.json||{90A6B3A7-C1A3-4009-A288-E2FF89E96FA0}"
     }
   ],
   "DocumentGroupContainers": [
@@ -22,45 +30,71 @@
       "DocumentGroups": [
         {
           "DockedWidth": 200,
-          "SelectedChildIndex": 2,
+          "SelectedChildIndex": 1,
           "Children": [
             {
               "$type": "Document",
               "DocumentIndex": 1,
-              "Title": "ocelot.json",
-              "DocumentMoniker": "D:\\Labs_6\\TRWP\\5\\TDWA05-01\\ocelot.json",
-              "RelativeDocumentMoniker": "ocelot.json",
-              "ToolTip": "D:\\Labs_6\\TRWP\\5\\TDWA05-01\\ocelot.json",
-              "RelativeToolTip": "ocelot.json",
-              "ViewState": "AgIAAAwAAAAAAAAAAAAAAB0AAAABAAAAAAAAAA==",
-              "Icon": "ae27a6b0-e345-4288-96df-5eaf394ee369.001642|",
-              "WhenOpened": "2026-04-13T15:13:39.842Z",
+              "Title": "Creater.cs",
+              "DocumentMoniker": "D:\\Labs_6\\TRWP\\5\\TDWA05-01\\Creater.cs",
+              "RelativeDocumentMoniker": "Creater.cs",
+              "ToolTip": "D:\\Labs_6\\TRWP\\5\\TDWA05-01\\Creater.cs",
+              "RelativeToolTip": "Creater.cs",
+              "ViewState": "AgIAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAA==",
+              "Icon": "ae27a6b0-e345-4288-96df-5eaf394ee369.000738|",
+              "WhenOpened": "2026-04-24T05:52:36.763Z",
               "EditorCaption": ""
             },
             {
               "$type": "Document",
-              "DocumentIndex": 2,
+              "DocumentIndex": 0,
               "Title": "CustotBalancer.cs",
               "DocumentMoniker": "D:\\Labs_6\\TRWP\\5\\TDWA05-01\\CustotBalancer.cs",
               "RelativeDocumentMoniker": "CustotBalancer.cs",
               "ToolTip": "D:\\Labs_6\\TRWP\\5\\TDWA05-01\\CustotBalancer.cs",
               "RelativeToolTip": "CustotBalancer.cs",
-              "ViewState": "AgIAAAAAAAAAAAAAAAAAACYAAAABAAAAAAAAAA==",
+              "ViewState": "AgIAAGMAAAAAAAAAAAAmwHIAAAABAAAAAAAAAA==",
               "Icon": "ae27a6b0-e345-4288-96df-5eaf394ee369.000738|",
               "WhenOpened": "2026-04-13T15:12:28.483Z",
               "EditorCaption": ""
             },
             {
               "$type": "Document",
-              "DocumentIndex": 0,
+              "DocumentIndex": 3,
               "Title": "Program.cs",
               "DocumentMoniker": "D:\\Labs_6\\TRWP\\5\\TDWA05-01\\Program.cs",
               "RelativeDocumentMoniker": "Program.cs",
               "ToolTip": "D:\\Labs_6\\TRWP\\5\\TDWA05-01\\Program.cs",
               "RelativeToolTip": "Program.cs",
-              "ViewState": "AgIAAAAAAAAAAAAAAAAAAA0AAAAKAAAAAAAAAA==",
+              "ViewState": "AgIAAAAAAAAAAAAAAAAAABAAAAAKAAAAAAAAAA==",
               "Icon": "ae27a6b0-e345-4288-96df-5eaf394ee369.000738|",
               "WhenOpened": "2026-04-13T15:10:31.225Z",
+              "EditorCaption": ""
+            },
+            {
+              "$type": "Document",
+              "DocumentIndex": 2,
+              "Title": "ocelot.json",
+              "DocumentMoniker": "D:\\Labs_6\\TRWP\\5\\TDWA05-01\\ocelot.json",
+              "RelativeDocumentMoniker": "ocelot.json",
+              "ToolTip": "D:\\Labs_6\\TRWP\\5\\TDWA05-01\\ocelot.json",
+              "RelativeToolTip": "ocelot.json",
+              "ViewState": "AgIAAAAAAAAAAAAAAAAAABMAAAAJAAAAAAAAAA==",
+              "Icon": "ae27a6b0-e345-4288-96df-5eaf394ee369.001642|",
+              "WhenOpened": "2026-04-13T15:13:39.842Z",
+              "EditorCaption": ""
+            },
+            {
+              "$type": "Document",
+              "DocumentIndex": 4,
+              "Title": "appsettings.json",
+              "DocumentMoniker": "D:\\Labs_6\\TRWP\\5\\TDWA05-01\\appsettings.json",
+              "RelativeDocumentMoniker": "appsettings.json",
+              "ToolTip": "D:\\Labs_6\\TRWP\\5\\TDWA05-01\\appsettings.json",
+              "RelativeToolTip": "appsettings.json",
+              "ViewState": "AgIAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAA==",
+              "Icon": "ae27a6b0-e345-4288-96df-5eaf394ee369.001642|",
+              "WhenOpened": "2026-04-23T21:23:50.264Z",
               "EditorCaption": ""
             }
           ]

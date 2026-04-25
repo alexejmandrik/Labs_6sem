@@ -34,10 +34,10 @@ D:\Labs_6\TRWP\5\TDWA05-01\obj\Debug\net10.0\staticwebassets.build.json.cache
 D:\Labs_6\TRWP\5\TDWA05-01\obj\Debug\net10.0\staticwebassets.development.json
 D:\Labs_6\TRWP\5\TDWA05-01\obj\Debug\net10.0\staticwebassets.build.endpoints.json
 D:\Labs_6\TRWP\5\TDWA05-01\obj\Debug\net10.0\swae.build.ex.cache
-D:\Labs_6\TRWP\5\TDWA05-01\obj\Debug\net10.0\staticwebassets.upToDateCheck.txt
 D:\Labs_6\TRWP\5\TDWA05-01\obj\Debug\net10.0\TDWA05-01.csproj.Up2Date
 D:\Labs_6\TRWP\5\TDWA05-01\obj\Debug\net10.0\TDWA05-01.dll
 D:\Labs_6\TRWP\5\TDWA05-01\obj\Debug\net10.0\refint\TDWA05-01.dll
 D:\Labs_6\TRWP\5\TDWA05-01\obj\Debug\net10.0\TDWA05-01.pdb
 D:\Labs_6\TRWP\5\TDWA05-01\obj\Debug\net10.0\TDWA05-01.genruntimeconfig.cache
 D:\Labs_6\TRWP\5\TDWA05-01\obj\Debug\net10.0\ref\TDWA05-01.dll
+D:\Labs_6\TRWP\5\TDWA05-01\obj\Debug\net10.0\staticwebassets.upToDateCheck.txt
