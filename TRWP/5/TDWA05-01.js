@@ -54,7 +54,7 @@ server.listen(port, () => {
 // $methods = @("GET", "POST", "PUT", "DELETE")
 
 // foreach ($method in $methods) {
-//     for ($i = 0; $i -lt 50; $i++) {
+//     for ($i = 0; $i -lt 10; $i++) {
 //         $response = Invoke-RestMethod -Uri "http://localhost:5185/lb" -Method $method
 //         "$method -> $($response.Nick)" | Out-File -Append results.txt
 //     }
@@ -63,21 +63,29 @@ server.listen(port, () => {
 
 // Get-Content results.txt | Group-Object | Sort-Object Count -Descending
 
+// Get-Content results.txt |
+// ForEach-Object {
+//     ($_ -split '->')[1].Trim()
+// } |
+// Group-Object |
+// Sort-Object Count -Descending |
+// ForEach-Object {
+//     "$($_.Name) = $($_.Count)"
+// }
 
 
 
+// $session = New-Object Microsoft.PowerShell.Commands.WebRequestSession
 
-$session = New-Object Microsoft.PowerShell.Commands.WebRequestSession
+// $methods = @("GET", "POST", "PUT", "DELETE")
 
-$methods = @("GET", "POST", "PUT", "DELETE")
+// foreach ($method in $methods) {
+//     for ($i = 0; $i -lt 5; $i++) {
+//         $response = Invoke-RestMethod `
+//             -Uri "http://localhost:5185/lb" `
+//             -Method $method `
+//             -WebSession $session
 
-foreach ($method in $methods) {
-    for ($i = 0; $i -lt 15; $i++) {
-        $response = Invoke-RestMethod `
-            -Uri "http://localhost:5185/lb" `
-            -Method $method `
-            -WebSession $session
-
-        "$method -> $($response.Nick)" | Out-File -Append results.txt
-    }
-}
+//         "$method -> $($response.Nick)" | Out-File -Append results.txt
+//     }
+// }

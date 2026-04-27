@@ -1,3 +1,5 @@
+alter session set container = XEPDB1;
+-- Спецификация типа
 CREATE OR REPLACE TYPE License_OBJ AS OBJECT (
     LicenseID NUMBER,
     SoftwareID NUMBER,
@@ -7,100 +9,105 @@ CREATE OR REPLACE TYPE License_OBJ AS OBJECT (
     Price NUMBER,
     LicenseCount NUMBER,
 
-    -- 1) метод экземпляра (функция)
+    -- Дополнительный конструктор
+    CONSTRUCTOR FUNCTION License_OBJ(p_id NUMBER, p_price NUMBER) RETURN SELF AS RESULT,
+
+    -- Функция как метод экземпляра
     MEMBER FUNCTION TotalCost RETURN NUMBER,
 
-    -- 2) процедура экземпляра
-    MEMBER PROCEDURE UpdatePrice(p_price NUMBER),
+    -- Процедура как метод экземпляра
+    MEMBER PROCEDURE UpdatePrice(p_new_price NUMBER),
 
-    -- 3) MAP функция для сравнения
-    MAP MEMBER FUNCTION GetCost RETURN NUMBER
+    -- Метод сравнения (MAP)
+    MAP MEMBER FUNCTION GetCost RETURN NUMBER DETERMINISTIC
 );
 /
 
-
-
+-- Тело типа (реализация методов)
 CREATE OR REPLACE TYPE BODY License_OBJ AS
+    CONSTRUCTOR FUNCTION License_OBJ(p_id NUMBER, p_price NUMBER) RETURN SELF AS RESULT IS
+    BEGIN
+        SELF.LicenseID := p_id;
+        SELF.Price := p_price;
+        SELF.PurchaseDate := SYSDATE;
+        SELF.LicenseCount := 1; -- значение по умолчанию
+        RETURN;
+    END;
 
-    -- 💰 вычисление стоимости
     MEMBER FUNCTION TotalCost RETURN NUMBER IS
     BEGIN
-        RETURN Price * LicenseCount;
+        RETURN SELF.Price * NVL(SELF.LicenseCount, 1);
     END;
 
-    -- ✏️ обновление цены
-    MEMBER PROCEDURE UpdatePrice(p_price NUMBER) IS
+    MEMBER PROCEDURE UpdatePrice(p_new_price NUMBER) IS
     BEGIN
-        SELF.Price := p_price;
+        SELF.Price := p_new_price;
     END;
 
-    -- 📊 MAP функция (для сортировок/сравнений)
-    MAP MEMBER FUNCTION GetCost RETURN NUMBER IS
+    MAP MEMBER FUNCTION GetCost RETURN NUMBER DETERMINISTIC IS
     BEGIN
-        RETURN Price * LicenseCount;
+        -- Для сравнения объектов будем использовать общую стоимость
+        RETURN SELF.TotalCost();
     END;
-
 END;
 /
+
 
 CREATE TABLE License_OBJ_Table OF License_OBJ;
 
-
-
+-- Копирование данных через конструктор по умолчанию
 INSERT INTO License_OBJ_Table
-SELECT License_OBJ(
-    LicenseID,
-    SoftwareID,
-    RoomID,
-    PurchaseDate,
-    ExpirationDate,
-    Price,
-    LicenseCount
-)
+SELECT License_OBJ(LicenseID, SoftwareID, RoomID, PurchaseDate, ExpirationDate, Price, LicenseCount)
 FROM Licenses;
 
-
-
 CREATE OR REPLACE VIEW License_View AS
-SELECT VALUE(l) AS License
-FROM License_OBJ_Table l;
+SELECT License_OBJ(LicenseID, SoftwareID, RoomID, PurchaseDate, ExpirationDate, Price, LicenseCount) AS License
+FROM Licenses;
+
+-- Пример использования представления
+SELECT l.License.LicenseID, l.License.TotalCost()
+FROM License_View l;
 
 
-SELECT l.LicenseID, l.TotalCost()
-FROM License_OBJ_Table l;
+
+-- 1. Индекс по атрибуту
+CREATE INDEX idx_license_price ON License_OBJ_Table (Price);
+
+-- 2. Индекс по методу (функциональный индекс)
+-- В Oracle для объектных таблиц мы вызываем метод прямо у столбца
+CREATE INDEX idx_license_cost ON License_OBJ_Table t (t.GetCost());
 
 
+-- Сортировка (использует MAP метод GetCost)
+SELECT *
+FROM License_OBJ_Table t
+ORDER BY VALUE(t);
+
+-- Вызов процедур и функций в PL/SQL блоке
 DECLARE
     l License_OBJ;
 BEGIN
-    SELECT VALUE(x)
-    INTO l
-    FROM License_OBJ_Table x
-    WHERE LicenseID = 1;
-
-    l.UpdatePrice(999);
-
-    UPDATE License_OBJ_Table t
-    SET t = l
-    WHERE t.LicenseID = 1;
+    SELECT VALUE(t) INTO l FROM License_OBJ_Table t WHERE LicenseID = 1;
+    l.UpdatePrice(1200);
+    UPDATE License_OBJ_Table t SET t = l WHERE t.LicenseID = 1;
+    DBMS_OUTPUT.PUT_LINE('Новая стоимость: ' || l.TotalCost());
 END;
 /
 
-CREATE INDEX idx_license_price
-ON License_OBJ_Table(Price);
 
+-- 1. Удаляем представление
+DROP VIEW License_View;
 
--- Не работает
-CREATE INDEX idx_license_cost
-ON License_OBJ_Table (VALUE(License_OBJ_Table).GetCost());
+-- 2. Удаляем индекс по цене
+DROP INDEX idx_license_price;
 
+-- 3. (если вдруг индекс на функцию создался частично — пробуем удалить)
+DROP INDEX idx_license_cost;
 
--- Не работает
-SELECT *
-FROM License_OBJ_Table
-ORDER BY VALUE(License_OBJ_Table).GetCost();
+-- 4. Удаляем таблицу объектов
+DROP TABLE License_OBJ_Table;
 
-
-
+-- 5. Удаляем тип (с телом)
+DROP TYPE License_OBJ FORCE;
 
 
